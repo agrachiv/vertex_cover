@@ -1,17 +1,25 @@
 #include "vertex_cover_solver.h"
+#include "benchmark/benchmark.h"
+
+vertex_cover_solver configure_complete_graph( int number_of_vertexes)
+{
+    vertex_cover_solver test( number_of_vertexes);
+    for ( int i = 0; i < number_of_vertexes; i++)
+	for ( int j = 0; j < number_of_vertexes; j++)
+	    if ( i < j)
+	    	test.add_edge(i, j);
+    return test;
+}
+
+void run_benchmark( benchmark::State& state)
+{
+    auto test = configure_complete_graph( state.range(0));
+    test.print_vertex_cover();
+}	
 
 int main()
 {
-    vertex_cover_solver test(7);
-
-    test.add_edge(0, 1);
-    test.add_edge(0, 2);
-    test.add_edge(1, 3);
-    test.add_edge(3, 4);
-    test.add_edge(4, 5);
-    test.add_edge(5, 6);
-
-    test.print_vertex_cover();
-
+    benchmark::RegisterBenchmark( "Test", run_benchmark);
+    benchmark::RunSpecifiedBenchmarks()->Range(8, 8<<10);
     return 0;
 }
